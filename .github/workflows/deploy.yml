@@ -19,6 +19,11 @@ jobs:
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v2
 
+      - name: Habilitar Docker en GitHub Actions
+        run: |
+          sudo systemctl start docker
+          docker --version
+
       - name: Iniciar LocalStack (modo FREE)
         run: |
           docker run -d --name localstack \
