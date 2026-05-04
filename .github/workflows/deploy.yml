@@ -1,36 +1,39 @@
-name: Deploy Terraform en LocalStack        # Nombre del workflow que aparecerá en GitHub Actions
+name: Deploy Terraform en LocalStack
 
 on:
   push:
-    branches: [ "main" ]                   # Se ejecuta automáticamente en cada push a la rama main
+    branches: [ "main" ]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest                 # GitHub ejecuta el workflow en una máquina Ubuntu
+    runs-on: ubuntu-latest
+    env:
+      LOCALSTACK_ACKNOWLEDGE_ACCOUNT_REQUIREMENT: "1"   # Fuerza modo gratuito
 
     steps:
       - name: Checkout del repositorio
-        uses: actions/checkout@v3          # Descarga el código del repositorio en la máquina runner
+        uses: actions/checkout@v3
 
       - name: Instalar Terraform
-        uses: hashicorp/setup-terraform@v2 # Instala Terraform en el runner
+        uses: hashicorp/setup-terraform@v2
 
       - name: Instalar LocalStack CLI
-        run: pip install localstack         # Instala la CLI de LocalStack (necesaria para iniciar el servicio)
+        run: pip install localstack
 
       - name: Iniciar LocalStack en background
-        run: localstack start -d            # Inicia LocalStack en modo "detached" (en segundo plano)
+        run: localstack start -d
 
       - name: Esperar a que LocalStack esté listo
         run: |
           echo "Esperando LocalStack..."
-          localstack wait -t 30             # Espera hasta que LocalStack esté operativo (máx. 30s)
+          localstack wait -t 30
 
       - name: Inicializar Terraform
-        run: terraform init                 # Inicializa Terraform y descarga providers (apuntando a LocalStack)
+        run: terraform init
 
       - name: Plan Terraform
-        run: terraform plan                 # Muestra los cambios que Terraform aplicará
+        run: terraform plan
 
       - name: Aplicar Terraform (auto-approve)
-        run: terraform apply -auto-approve  # Aplica los cambios automáticamente sin pedir confirmación
+        run: terraform apply -auto-approve
+
