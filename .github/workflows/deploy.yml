@@ -8,9 +8,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      LOCALSTACK_API_KEY: ""   # Fuerza modo gratuito
-      LOCALSTACK_AUTH_TOKEN: ""                       # Evita modo PRO
-      LOCALSTACK_ACKNOWLEDGE_ACCOUNT_REQUIREMENTS: "1" # Acepta modo FREE
+      LOCALSTACK_API_KEY: ""
+      LOCALSTACK_AUTH_TOKEN: ""
+      LOCALSTACK_ACKNOWLEDGE_ACCOUNT_REQUIREMENTS: "1"
 
     steps:
       - name: Checkout del repositorio
@@ -19,16 +19,18 @@ jobs:
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Instalar LocalStack CLI
-        run: pip install localstack
-
-      - name: Iniciar LocalStack en background
-        run: localstack start -d
+      - name: Iniciar LocalStack (modo FREE)
+        run: |
+          docker run -d --name localstack \
+            -p 4566:4566 -p 4571:4571 \
+            -e SERVICES=s3 \
+            -e DEBUG=1 \
+            localstack/localstack:latest
 
       - name: Esperar a que LocalStack esté listo
         run: |
           echo "Esperando LocalStack..."
-          localstack wait -t 30
+          sleep 10
 
       - name: Inicializar Terraform
         run: terraform init
