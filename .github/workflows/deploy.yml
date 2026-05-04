@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOCALSTACK_ACKNOWLEDGE_ACCOUNT_REQUIREMENT: "1"   # Fuerza modo gratuito
+      LOCALSTACK_AUTH_TOKEN: ""                       # Evita modo PRO
+      LOCALSTACK_ACKNOWLEDGE_ACCOUNT_REQUIREMENT: "1" # Acepta modo FREE
 
     steps:
       - name: Checkout del repositorio
