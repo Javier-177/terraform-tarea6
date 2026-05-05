@@ -41,7 +41,7 @@ provider "aws" {
   # Redefinimos el endpoint de S3 para que apunte a LocalStack en localhost.
   endpoints {
     # Puerto 4566: endpoint unificado de LocalStack para los servicios AWS.
-    s3 = "http://127.0.0.1:4566"
+    s3 = "http://localhost:4566"
   }
 }
 
