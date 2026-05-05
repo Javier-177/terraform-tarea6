@@ -15,12 +15,18 @@ jobs:
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Iniciar LocalStack (modo FREE)
-        uses: localstack/setup-localstack@v0.2.3
-        with:
-          image-tag: "latest"
-          use-pro: false
-          skip-wait: false
+      - name: Iniciar LocalStack FREE con Docker
+        run: |
+          docker run -d --name localstack \
+            -p 4566:4566 \
+            -e SERVICES=s3 \
+            -e DEBUG=1 \
+            localstack/localstack:latest
+
+      - name: Esperar a que LocalStack esté listo
+        run: |
+          echo "Esperando LocalStack..."
+          sleep 15
 
       - name: Inicializar Terraform
         run: terraform init
