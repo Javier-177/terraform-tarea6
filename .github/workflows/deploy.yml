@@ -18,9 +18,9 @@ jobs:
       - name: Iniciar LocalStack (modo FREE)
         uses: localstack/setup-localstack@v0.2.3
         with:
-          services: s3
           image-tag: "latest"
-          wait: 30
+          use-pro: false
+          skip-wait: false
 
       - name: Inicializar Terraform
         run: terraform init
