@@ -53,3 +53,4 @@ resource "aws_s3_bucket" "demo" {
   bucket = "mi-bucket-localstack"
 }
 # Versión 1.0: infraestructura base
+# Comentario para simular cambios
