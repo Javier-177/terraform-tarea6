@@ -1,26 +1,63 @@
-name: Deploy Terraform
+# Nombre del workflow (aparece en GitHub Actions)
+name: Terraform Deploy
 
+# Evento que dispara el workflow: cada push a la rama main
 on:
   push:
     branches: [ "main" ]
 
 jobs:
   deploy:
+    # El job se ejecuta en un runner Ubuntu proporcionado por GitHub
     runs-on: ubuntu-latest
 
+    # Aquí está la CLAVE: levantar LocalStack como servicio del runner
+    # Esto SÍ funciona en GitHub Actions (a diferencia de docker run)
+    services:
+      localstack:
+        # Imagen oficial de LocalStack FREE
+        image: localstack/localstack:3.0
+
+        # Exponer el puerto 4566 dentro del runner
+        ports:
+          - 4566:4566
+
+        # Indicar qué servicios de AWS queremos simular
+        env:
+          SERVICES: s3
+
+        # Healthcheck para asegurarnos de que LocalStack está listo
+        options: >-
+          --health-cmd="curl -f http://localhost:4566/health || exit 1"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=20
+
     steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v3
 
-      - name: Instalar Terraform
-        uses: hashicorp/setup-terraform@v2
+      # 1. Descargar el código del repositorio en el runner
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # 2. Instalar Terraform en el runner
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 3. Esperar unos segundos para que LocalStack termine de arrancar
+      #    (aunque el healthcheck ya ayuda, esto evita errores intermitentes)
+      - name: Wait for LocalStack
+        run: sleep 10
+
+      # 4. Inicializar Terraform (descarga providers, módulos, etc.)
       - name: Terraform Init
         run: terraform init
 
+      # 5. Generar el plan de ejecución
       - name: Terraform Plan
         run: terraform plan
 
+      # 6. Aplicar los cambios automáticamente
+      #    Aquí es donde se crea el bucket en LocalStack
       - name: Terraform Apply
         run: terraform apply -auto-approve
-
+        
