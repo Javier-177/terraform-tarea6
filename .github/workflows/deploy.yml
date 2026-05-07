@@ -1,4 +1,4 @@
-name: Deploy Terraform en LocalStack
+name: Deploy Terraform
 
 on:
   push:
@@ -15,24 +15,12 @@ jobs:
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Iniciar LocalStack FREE con Docker
-        run: |
-          docker run -d --name localstack \
-            -p 4566:4566 \
-            -e SERVICES=s3 \
-            -e DEBUG=1 \
-            localstack/localstack:latest
-
-      - name: Esperar a que LocalStack esté listo
-        run: |
-          echo "Esperando LocalStack..."
-          sleep 15
-
-      - name: Inicializar Terraform
+      - name: Terraform Init
         run: terraform init
 
-      - name: Plan Terraform
+      - name: Terraform Plan
         run: terraform plan
 
-      - name: Aplicar Terraform (auto-approve)
+      - name: Terraform Apply
         run: terraform apply -auto-approve
+
