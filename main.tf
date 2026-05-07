@@ -52,3 +52,4 @@ resource "aws_s3_bucket" "demo" {
   # Nombre del bucket que se creará en LocalStack (no en AWS real).
   bucket = "mi-bucket-localstack"
 }
+# Versión 1.0: infraestructura base
